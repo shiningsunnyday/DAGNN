@@ -107,6 +107,7 @@ bidir = args.bidirectional
 vis_2d = args.vis_2d
 
 '''Load hyperparameters'''
+print(os.path.abspath(data_dir + 'cmd_input.txt'))
 with open(data_dir + 'cmd_input.txt', 'r') as f:
     cmd_input = f.readline()
 cmd_input = cmd_input.split('--')

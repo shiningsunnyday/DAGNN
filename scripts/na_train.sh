@@ -10,7 +10,8 @@ date
 ## 1 device
 ## 2 model
 
-source activate dagnn
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate dagnn
 
 PROJECT=$PWD
 cd dvae
@@ -28,9 +29,9 @@ mkdir -p $RESULTS
 
 MODEL=$2
 NAME=$MODEL
-SAVE=50
+SAVE=1
 BS=32
-EPOCHS=100
+EPOCHS=10
 LR=1e-3
 
 LAYERS=2
@@ -49,8 +50,8 @@ fi
 python train.py --data-name final_structures6 --data-type ENAS --save-interval $SAVE --lr $LR --save-appendix "_${NAME}" \
 		--epochs $EPOCHS --batch-size $BS --model $MODEL --nz 56 --nvt 6 --res_dir=$RESULTS --keep-old --load-latest-model \
   	--dagnn_layers $LAYERS  --dagnn_agg $AGG  \
-  	--dagnn_out_pool_all $POOL_ALL --dagnn_out_pool $POOL --dagnn_dropout $DROPOUT --clip=$CLIP  \
-  	&> $RESULTS/"${NAME}.txt"
+  	--dagnn_out_pool_all $POOL_ALL --dagnn_out_pool $POOL --dagnn_dropout $DROPOUT --clip=$CLIP
+  	# &> $RESULTS/"${NAME}.txt"
 
 echo "Completed"
 date

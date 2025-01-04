@@ -6,7 +6,8 @@ echo $0
 echo "Started"
 date
 
-source activate dagnn
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate dagnn
 
 PROJECT=$PWD
 cd dvae/bayesian_optimization
@@ -47,7 +48,7 @@ python bo.py \
   --save-appendix=$NAME --model=$MODEL \
   --checkpoint=$CHECK \
   --res-dir=$RESULTS \
-  --dagnn_layers $LAYERS --dagnn_agg $AGG --dagnn_out_wx $OUT_WX \
+  --dagnn_layers $LAYERS --dagnn_agg $AGG \
   --dagnn_out_pool_all $POOL_ALL --dagnn_out_pool $POOL --dagnn_dropout $DROPOUT &> $RESULTS/"${NAME}.txt"
 
 python summarize.py \

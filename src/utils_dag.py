@@ -19,7 +19,7 @@ def top_sort(edge_index, graph_size):
     while unevaluated_nodes.any():
         # Find which parent nodes have not been evaluated
         unevaluated_mask = unevaluated_nodes[parent_nodes]
-
+        
         # Find the child nodes of unevaluated parents
         unready_children = child_nodes[unevaluated_mask]
 

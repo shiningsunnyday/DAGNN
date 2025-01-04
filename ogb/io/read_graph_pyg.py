@@ -47,7 +47,7 @@ def read_graph_pyg(raw_dir, add_inverse_edge = False, additional_node_files = []
             del graph[key]
 
         pyg_graph_list.append(g)
-
+        breakpoint()
         add_order_info_01(g)  # DAGNN
         # length of longest path
         # layer ids start with 0 so max, gives actual path length and -1 is not necessary

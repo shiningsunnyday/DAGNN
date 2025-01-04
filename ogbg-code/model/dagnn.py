@@ -6,7 +6,7 @@ from torch_scatter import scatter_add
 from torch_geometric.nn.glob import *
 from torch_geometric.nn.inits import uniform, glorot
 from torch_geometric.nn import MessagePassing
-from src.constants import *
+from dagnn.src.constants import *
 from typing import Optional
 from torch import Tensor
 from torch_geometric.typing import OptTensor
@@ -125,7 +125,7 @@ class DAGNN(nn.Module):
         layer0 = G.bi_layer_index[1][1][layer0]
         return layer0
 
-    def forward(self, G):
+    def forward(self, G):        
         # need to create these here since pyg's batching otherwise messes up the indices
         G.bi_layer_index = torch.stack([
             torch.stack([G._bi_layer_idx0, G._bi_layer_index0], dim=0),
@@ -135,8 +135,7 @@ class DAGNN(nn.Module):
         device = G.x.device
         num_nodes_batch = G.x.shape[0]
         num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
-
-        G.x = self.encoder(G.x, G.node_depth.view(-1, ))
+        # G.x = self.encoder(G.x, G.node_depth.view(-1, ))
 
         G.h = [[torch.zeros(num_nodes_batch, self.hidden_dim).to(device)
                 for _ in self.__getattr__("cells_{}".format(0))] for _ in self.dirs]

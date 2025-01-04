@@ -22,7 +22,7 @@ from utils import augment_edge, encode_y_to_arr, decode_arr_to_seq
 from utils2 import ASTNodeEncoder2
 ### DAGNN
 import random
-from dagnn import DAGNN
+from model.dagnn import DAGNN
 from model.gnn2 import GAT, GGNN_Simple, SAGPoolGNN  #, DGCNN, GAT, UNet, DiffPoolGNN, GGNN
 from model.asap import ASAP
 from utils2 import augment_edge2

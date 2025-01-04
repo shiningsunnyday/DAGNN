@@ -49,6 +49,7 @@ def train(model, device, loader, optimizer, args, evaluator, arr_to_seq):
             print("FALSE")
             pass
         else:
+            breakpoint()
             pred_list = model(batch)
             optimizer.zero_grad()
 
@@ -204,7 +205,6 @@ def main():
         with open(res_file, 'w') as f:
             f.write("fold,epoch,bestv_train,bestv_valid,bestv_test\n")
     time_file = os.path.join(args.dir_times, args.filename + '.csv')
-
     ### automatic dataloading and splitting
     dataset = PygGraphPropPredDataset(name=args.dataset, root="dataset" if args.dir_data is None else args.dir_data)
 

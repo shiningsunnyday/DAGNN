@@ -20,7 +20,6 @@ class PygGraphPropPredDataset(InMemoryDataset):
         ''' 
 
         self.name = name ## original name, e.g., ogbg-molhiv
-        
         if meta_dict is None:
             self.dir_name = '_'.join(name.split('-')) 
             
@@ -32,7 +31,7 @@ class PygGraphPropPredDataset(InMemoryDataset):
             self.original_root = root
             self.root = osp.join(root, self.dir_name)
             
-            master = pd.read_csv(os.path.join(os.path.dirname(__file__), 'master.csv'), index_col = 0)
+            master = pd.read_csv(os.path.join(os.path.dirname(__file__), 'master.csv'), index_col = 0, keep_default_na=False)
             if not self.name in master:
                 error_mssg = 'Invalid dataset name {}.\n'.format(self.name)
                 error_mssg += 'Available datasets are as follows:\n'
@@ -130,7 +129,7 @@ class PygGraphPropPredDataset(InMemoryDataset):
             additional_edge_files = []
         else:
             additional_edge_files = self.meta_info['additional edge files'].split(',')
-
+        breakpoint()
         data_list = read_graph_pyg(self.raw_dir, add_inverse_edge = add_inverse_edge, additional_node_files = additional_node_files, additional_edge_files = additional_edge_files, binary=self.binary)
 
         if self.task_type == 'subtoken prediction':

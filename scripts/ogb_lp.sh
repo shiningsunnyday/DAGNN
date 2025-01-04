@@ -2,7 +2,8 @@
 
 set -e
 
-source activate dagnn
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate dagnn
 
 PROJECT=$PWD
 

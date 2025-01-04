@@ -6,7 +6,8 @@ echo $0
 echo "Started"
 date
 
-source activate dagnn
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate dagnn
 
 PROJECT=$PWD
 cd dvae
