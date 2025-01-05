@@ -33,3 +33,13 @@ The DAGNN models in this directory contain additional methods to support the dec
 * Note that the learning rates and epoch numbers in the scripts are the ones which we used for DAGNN. The experiment parameters for the D-VAE models and baselines can be found [here](https://github.com/muhanzhang/D-VAE/blob/master/commands.sh).
 
 Please leave an issue if you have any trouble running the code or suggestions for improvements.
+
+
+## Modifications for submodule as induction/
+
+from src.constants import *
+
+/home/msun415/miniforge3/envs/dagnn_clone/lib/python3.9/site-packages/tensorflow/python/training/basic_session_run_hooks.py
+- add keyword arg global_step_tensor=None to __init__
+- modify def begin() of CheckpointSaverHook:
+self._global_step_tensor = training_util._get_or_create_global_step_read() if self._global_step_tensor is None else self._global_step_tensor # pylint: 

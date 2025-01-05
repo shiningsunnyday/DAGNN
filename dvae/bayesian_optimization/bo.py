@@ -98,6 +98,7 @@ args = parser.parse_args()
 data_name = args.data_name
 save_appendix = args.save_appendix
 data_dir = os.path.join(args.data_dir,'{}_{}'.format(data_name, save_appendix)) + "/"  # data and model folder
+print("DATA_DIR", os.path.abspath(data_dir))
 checkpoint = args.checkpoint
 res_dir = args.res_dir
 data_type = args.data_type
@@ -146,14 +147,14 @@ random_as_test = args.random_as_test
 
 # other BO hyperparameters
 lr = 0.0005  # the learning rate to train the SGP model
-max_iter = 100  # how many iterations to optimize the SGP each time
+max_iter = 1  # how many iterations to optimize the SGP each time
 
 # architecture performance evaluator
-# if data_type == 'ENAS':
-#     sys.path.append('%s/../software/enas/src/cifar10' % os.path.dirname(os.path.realpath(__file__)))
-#     from evaluation import *
-#     eva = Eval_NN()  # build the network acc evaluater
-                     # defined in ../software/enas/src/cifar10/evaluation.py
+if data_type == 'ENAS':
+    sys.path.append('%s/../software/enas/src/cifar10' % os.path.dirname(os.path.realpath(__file__)))
+    breakpoint()
+    from evaluation import *
+    eva = Eval_NN()  # build the network acc evaluater defined in ../software/enas/src/cifar10/evaluation.py
 
 data = loadmat(data_dir + '{}_latent_epoch{}.mat'.format(data_name, checkpoint))  # load train/test data
 #data = loadmat(data_dir + '{}_latent.mat'.format(data_name))  # load train/test data
@@ -245,7 +246,7 @@ for rand_idx in range(1, 11):
         os.remove(save_dir + 'Test_RMSE_ll.txt')
     if os.path.exists(save_dir + 'best_arc_scores.txt'):
         os.remove(save_dir + 'best_arc_scores.txt')
-
+    
     while iteration < BO_rounds and args.bo:
         print("Iteration", iteration)
         if args.predictor:

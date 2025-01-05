@@ -11,7 +11,7 @@ date
 ## 2 model
 
 source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate dagnn
+conda activate dagnn_new
 
 PROJECT=$PWD
 cd dvae
