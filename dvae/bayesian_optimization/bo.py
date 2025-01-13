@@ -148,17 +148,17 @@ random_as_test = args.random_as_test
 # other BO hyperparameters
 lr = 0.0005  # the learning rate to train the SGP model
 max_iter = 1  # how many iterations to optimize the SGP each time
-
-# architecture performance evaluator
-if data_type == 'ENAS':
-    sys.path.append('%s/../software/enas/src/cifar10' % os.path.dirname(os.path.realpath(__file__)))
-    breakpoint()
-    from evaluation import *
-    eva = Eval_NN()  # build the network acc evaluater defined in ../software/enas/src/cifar10/evaluation.py
-
+breakpoint()
 data = loadmat(data_dir + '{}_latent_epoch{}.mat'.format(data_name, checkpoint))  # load train/test data
 #data = loadmat(data_dir + '{}_latent.mat'.format(data_name))  # load train/test data
 
+
+# architecture performance evaluator
+if data_type == 'ENAS':
+    sys.path.append('%s/../software/enas/src/cifar10' % os.path.dirname(os.path.realpath(__file__)))    
+    from evaluation import *
+    eva = Eval_NN()  # build the network acc evaluater defined in ../software/enas/src/cifar10/evaluation.py
+    
 if torch.cuda.is_available():
     device = torch.device("cuda:" + str(0))
 else:
@@ -212,7 +212,7 @@ for rand_idx in range(1, 11):
 
     # load the data
     X_train = data['Z_train']
-    y_train = -data['Y_train'].reshape((-1,1))
+    y_train = -data['Y_train'].reshape((-1,1))    
     if data_type == 'BN':
         # remove duplicates, otherwise SGP ill-conditioned
         X_train, unique_idxs = np.unique(X_train, axis=0, return_index=True)
