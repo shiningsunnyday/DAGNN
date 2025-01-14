@@ -1,12 +1,12 @@
 
-import pytensor
-import pytensor.tensor as T
+import theano
+import theano.tensor as T
 
 import numpy as np
 from scipy.spatial.distance import cdist
 
 def casting(x):
-    return np.array(x).astype(pytensor.config.floatX)
+    return np.array(x).astype(theano.config.floatX)
 
 def compute_kernel(lls, lsf, x, z):
 
