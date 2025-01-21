@@ -10,6 +10,7 @@ import theano
 import theano.tensor as T
 
 from sparse_gp_theano_internal import *
+from scipy.stats import pearsonr
 
 import scipy.stats    as sps
 import scipy.optimize as spo
@@ -21,7 +22,7 @@ from tqdm import tqdm
 def casting(x):
     return np.array(x).astype(theano.config.floatX)
 
-def global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient):
+def global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient, max_iter=150):
 
     grid_values = function_grid(grid)
     best = grid_values.argmin()
@@ -37,7 +38,7 @@ def global_optimization(grid, lower, upper, function_grid, function_scalar, func
         return np.float(value), gradient_value.astype(np.float)
 
     lbfgs_bounds = zip(lower.tolist(), upper.tolist())
-    x_optimal, y_opt, opt_info = spo.fmin_l_bfgs_b(objective, X_initial, bounds = list(lbfgs_bounds), iprint = 0, maxiter = 150)
+    x_optimal, y_opt, opt_info = spo.fmin_l_bfgs_b(objective, X_initial, bounds = list(lbfgs_bounds), iprint = 0, maxiter = max_iter)
     x_optimal = x_optimal.reshape((1, grid.shape[ 1 ]))
 
     return x_optimal, y_opt
@@ -229,7 +230,12 @@ class SparseGP:
         sys.stdout.flush()
         n_batches = int(np.ceil(1.0 * n_data_points / minibatch_size))
         pbar = tqdm(range(max_iterations))
+        max_patience = 10
+        best_j = -1
+        best_error = float("inf")
         for j in pbar:
+            if j-best_j > max_patience:
+                break
             suffle = np.random.choice(n_data_points, n_data_points, replace = False)
             input_means = input_means[ suffle, : ]
             input_vars = input_vars[ suffle, : ]
@@ -250,7 +256,7 @@ class SparseGP:
             pred, uncert = self.predict(input_means_test, input_vars_test)
             test_error = np.sqrt(np.mean((pred - test_targets)**2))
             test_ll = np.mean(sps.norm.logpdf(pred - test_targets, scale = np.sqrt(uncert)))
-
+            test_r2 = float(pearsonr(pred.flatten(), test_targets.flatten())[0])
         
             pred = np.zeros((0, 1))
             uncert = np.zeros((0, uncert.shape[ 1 ]))
@@ -264,10 +270,15 @@ class SparseGP:
             training_error = np.sqrt(np.mean((pred - training_targets)**2))
             training_ll = np.mean(sps.norm.logpdf(pred - training_targets, scale = np.sqrt(uncert)))
      
-            pbar.set_description('Epoch {}, Train error: {:.4f} Test error: {:.4f} Test ll: {:.4f}'.format(j, training_error, test_error, test_ll))
+            pbar.set_description('Epoch {}, Train error: {:.4f} Test error: {:.4f} Test R^2: {:.4f} Test ll: {:.4f}'.format(j, training_error, test_error, test_r2, test_ll))
+            print('Epoch {}, Train error: {:.4f} Test error: {:.4f} Test R^2: {:.4f} Test ll: {:.4f}'.format(j, training_error, test_error, test_r2, test_ll))
             sys.stdout.flush()
             #print('Train error: {:.4f} Train ll: {:.4f}'.format(training_error, training_ll))
             #sys.stdout.flush()
+            if test_error < best_error:
+                best_error = test_error
+                best_j = j
+                print(f"best error {best_error} at iter {j}")
 
     def get_incumbent(self, grid, lower, upper):
         
@@ -293,7 +304,7 @@ class SparseGP:
 
         return global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient)[ 0 ]
 
-    def batched_greedy_ei(self, q, lower, upper, mean, std, n_samples = 1, sample='normal'):
+    def batched_greedy_ei(self, q, lower, upper, mean, std, n_samples = 1, sample='normal', max_iter=150):
 
         self.setForPrediction()
 
@@ -320,7 +331,7 @@ class SparseGP:
         print("Batch greedy EI selection...")
         pbar = tqdm(range(1, q))
         for i in pbar:
-            new_point = global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient)[ 0 ]
+            new_point = global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient, max_iter=max_iter)[ 0 ]
             X_numpy = casting(np.concatenate([ X_numpy, new_point ], 0))
             randomness_numpy = casting(0 * np.random.randn(X_numpy.shape[ 0 ], n_samples).astype(theano.config.floatX))
             X.set_value(X_numpy)
