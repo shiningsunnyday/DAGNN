@@ -17,7 +17,7 @@ import math
 sys.path.append('%s/../scripts/' % os.path.dirname(os.path.realpath(__file__)))
 import networkx as nx
 from torch_geometric.data import Data
-from src.utils_dag import add_order_info
+# from src.utils_dag import add_order_info
 
 # create a parser to save graph arguments
 cmd_opt = argparse.ArgumentParser()
