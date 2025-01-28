@@ -15,7 +15,10 @@ class Eval_BN(object):
     def compute_score(self, input_file, output_file=None):
         if output_file is None:
             output_file = input_file + "_score"
-        cmd = 'Rscript compute_score.R %s %s' % (input_file, output_file)
+        input_file = os.path.abspath(input_file)
+        output_file = os.path.abspath(output_file)
+        cmd = 'bash -i -c "conda activate cktgnn_r && cd ~/induction/dagnn/dvae/bayesian_optimization && Rscript compute_score.R ' + input_file + ' ' + output_file + ' &"'
+        # cmd = 'cd ~/induction/dagnn/dvae/bayesian_optimization && Rscript compute_score.R ' + input_file + ' ' + output_file
         os.system(cmd)
         score = np.loadtxt(output_file, ndmin=1)
         return float(score[0])

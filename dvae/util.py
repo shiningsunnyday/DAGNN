@@ -11,7 +11,7 @@ import collections
 import igraph
 import argparse
 import sys
-# import pygraphviz as pgv  # uncomment this for BO
+import pygraphviz as pgv  # uncomment this for BO
 from PIL import Image
 import math
 sys.path.append('%s/../scripts/' % os.path.dirname(os.path.realpath(__file__)))

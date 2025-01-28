@@ -22,7 +22,7 @@ from tqdm import tqdm
 def casting(x):
     return np.array(x).astype(theano.config.floatX)
 
-def global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient, max_iter=150):
+def global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient, max_iter=150, factr=1e7):
 
     grid_values = function_grid(grid)
     best = grid_values.argmin()
@@ -38,7 +38,7 @@ def global_optimization(grid, lower, upper, function_grid, function_scalar, func
         return np.float(value), gradient_value.astype(np.float)
 
     lbfgs_bounds = zip(lower.tolist(), upper.tolist())
-    x_optimal, y_opt, opt_info = spo.fmin_l_bfgs_b(objective, X_initial, bounds = list(lbfgs_bounds), iprint = 0, maxiter = max_iter)
+    x_optimal, y_opt, opt_info = spo.fmin_l_bfgs_b(objective, X_initial, bounds = list(lbfgs_bounds), iprint = 0, maxiter = max_iter, factr=factr)
     x_optimal = x_optimal.reshape((1, grid.shape[ 1 ]))
 
     return x_optimal, y_opt
@@ -304,7 +304,7 @@ class SparseGP:
 
         return global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient)[ 0 ]
 
-    def batched_greedy_ei(self, q, lower, upper, mean, std, n_samples = 1, sample='normal', max_iter=150):
+    def batched_greedy_ei(self, q, lower, upper, mean, std, n_samples = 1, sample='normal', max_iter=150, factr=1e7):
 
         self.setForPrediction()
 
@@ -331,7 +331,7 @@ class SparseGP:
         print("Batch greedy EI selection...")
         pbar = tqdm(range(1, q))
         for i in pbar:
-            new_point = global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient, max_iter=max_iter)[ 0 ]
+            new_point = global_optimization(grid, lower, upper, function_grid, function_scalar, function_scalar_gradient, max_iter=max_iter, factr=factr)[ 0 ]
             X_numpy = casting(np.concatenate([ X_numpy, new_point ], 0))
             randomness_numpy = casting(0 * np.random.randn(X_numpy.shape[ 0 ], n_samples).astype(theano.config.floatX))
             X.set_value(X_numpy)
